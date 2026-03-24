@@ -25,4 +25,15 @@ export class CustomerController {
 
     res.json(Customer);
   };
+
+  addAddress = async (req: Request, res: Response) => {
+    const _req = req as AuthRequest;
+    const { sub: userId } = _req.auth;
+    const customerId = req.params.id as string;
+    const { address } = req.body as { address: string };
+
+    const customer = await this.customerService.updateAddress(userId, customerId, address);
+
+    res.json(customer);
+  };
 }

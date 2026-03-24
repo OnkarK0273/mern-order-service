@@ -9,4 +9,21 @@ export class CustomerService {
   async createCustomer(customer: Customer) {
     return await customerModel.create(customer);
   }
+
+  async updateAddress(userId: string, customerId: string, address: string) {
+    return await customerModel.findOneAndUpdate(
+      {
+        _id: customerId,
+        userId,
+      },
+      {
+        $push: {
+          addresses: {
+            text: address,
+          },
+        },
+      },
+      { new: true },
+    );
+  }
 }
