@@ -13,6 +13,8 @@ const couponService = new CouponService();
 const couponController = new CouponController(couponService, logger);
 
 router.route('/').post(authenticate, couponCreateValidator, asyncWrapper(couponController.create));
+router.route('/verify').post(authenticate, asyncWrapper(couponController.veryfy));
+
 router.route('/:id').patch(authenticate, couponUpdateValidator, asyncWrapper(couponController.update));
 
 router.route('/').get(authenticate, asyncWrapper(couponController.getAll));

@@ -10,6 +10,15 @@ export interface Coupon {
   updatedAt?: Date;
 }
 
+export interface Filter {
+  code: string;
+  tenantId: number;
+}
+
 export interface CreateCouponRequest extends Request {
   body: Coupon;
+}
+
+export interface VerifyCouponRequest extends Request {
+  body: Filter;
 }

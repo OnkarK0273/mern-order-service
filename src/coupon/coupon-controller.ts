@@ -1,6 +1,6 @@
 import { CouponService } from './coupon-service';
 import { NextFunction, Request, Response } from 'express';
-import { CreateCouponRequest } from './coupon-types';
+import { CreateCouponRequest, VerifyCouponRequest } from './coupon-types';
 import { validationResult } from 'express-validator';
 import createHttpError from 'http-errors';
 import { Logger } from 'winston';
@@ -49,6 +49,27 @@ export class CouponController {
 
     this.logger.info(`Update Coupon`, { id: updatedCoupon?._id });
     res.json(updatedCoupon);
+  };
+
+  veryfy = async (req: VerifyCouponRequest, res: Response, next: NextFunction) => {
+    const { code, tenantId } = req.body;
+
+    const coupon = await this.couponService.findCoupan({ code, tenantId });
+
+    if (!coupon) {
+      const error = createHttpError(400, 'Coupon does not exists');
+      return next(error);
+    }
+
+    // validate expiry
+    const currentDate = new Date();
+    const couponDate = new Date(coupon.validUpto);
+
+    if (currentDate <= couponDate) {
+      return res.json({ valid: true, discount: coupon.discount });
+    }
+
+    return res.json({ valid: false, discount: 0 });
   };
 
   getAll = async (req: Request, res: Response) => {

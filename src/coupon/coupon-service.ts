@@ -1,5 +1,5 @@
 import couponModel from './coupon-model';
-import { Coupon } from './coupon-types';
+import { Coupon, Filter } from './coupon-types';
 
 export class CouponService {
   async createCoupon(coupon: Coupon) {
@@ -12,6 +12,10 @@ export class CouponService {
 
   async getCoupon() {
     return await couponModel.find();
+  }
+
+  async findCoupan(filterData: Filter) {
+    return await couponModel.findOne(filterData);
   }
 
   async getById(couponId: string) {
