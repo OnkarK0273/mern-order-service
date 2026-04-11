@@ -1,3 +1,4 @@
+import { handleProductUpdate } from '../productCashe/product-update-handler';
 import { MessageBroker } from '../types/broker';
 import { Consumer, EachMessagePayload, Kafka } from 'kafkajs';
 export class KafkaBroker implements MessageBroker {
@@ -20,13 +21,21 @@ export class KafkaBroker implements MessageBroker {
     await this.consumer.subscribe({ topics, fromBeginning });
 
     await this.consumer.run({
-      // eslint-disable-next-line @typescript-eslint/require-await
       eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
         console.log({
           value: message.value?.toString(),
           topic,
           partition,
         });
+        if (message.value !== null) {
+          switch (topic) {
+            case 'product':
+              await handleProductUpdate(message.value.toString());
+              return;
+            default:
+              console.log('Doing nothing...');
+          }
+        }
       },
     });
   }
