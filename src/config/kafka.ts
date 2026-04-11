@@ -1,3 +1,4 @@
+import { handleToppingUpdate } from '../toppingCashe/topping-cashe-handler';
 import { handleProductUpdate } from '../productCashe/product-update-handler';
 import { MessageBroker } from '../types/broker';
 import { Consumer, EachMessagePayload, Kafka } from 'kafkajs';
@@ -31,6 +32,9 @@ export class KafkaBroker implements MessageBroker {
           switch (topic) {
             case 'product':
               await handleProductUpdate(message.value.toString());
+              return;
+            case 'topping':
+              await handleToppingUpdate(message.value.toString());
               return;
             default:
               console.log('Doing nothing...');
