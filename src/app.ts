@@ -6,6 +6,7 @@ import logger from './config/logger';
 import { globalErrorHandler } from './middlewares/globalErrorHandler';
 import customerRouter from './customer/customer-route';
 import couponRouter from './coupon/coupon-route';
+import orderRouter from './order/order-route';
 import cookieParser from 'cookie-parser';
 const app: Application = express();
 
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 
 app.use('/customer', customerRouter);
 app.use('/coupon', couponRouter);
+app.use('/orders', orderRouter);
 
 // helth Routes
 app.get('/health', (req: Request, res: Response) => {
