@@ -4,6 +4,7 @@ import productCacheModel from '../productCashe/product-cashe-model';
 import toppingCasheModel from '../toppingCashe/topping-cashe-model';
 import { ProductPricingCache } from '../productCashe/product-cashe-types';
 import { ToppingPriceCache } from '../toppingCashe/topping-cashe-types';
+import couponModel from '../coupon/coupon-model';
 
 export class OrderController {
   create = async (req: CreateOrderRequest, res: Response) => {
@@ -11,7 +12,19 @@ export class OrderController {
 
     const totalPrice = await this.calculateTotal(cartItems);
 
-    return res.json({ totalPrice: totalPrice });
+    let discountPercentage = 0;
+
+    const couponCode = req.body.couponCode;
+    const tenantId = req.body.tenantId;
+
+    if (couponCode) {
+      discountPercentage = await this.getDiscountPercentage(couponCode, tenantId);
+    }
+
+    const discountAmount = Math.round((totalPrice * discountPercentage) / 100);
+    const totalPriceAfterDiscount = totalPrice - discountAmount;
+
+    return res.json({ orignalPrice: totalPrice, totalPrice: totalPriceAfterDiscount, discountAmount: discountAmount });
   };
 
   private calculateTotal = async (cart: CartItem[]) => {
@@ -78,5 +91,22 @@ export class OrderController {
     }
 
     return currentTopping.price;
+  };
+
+  private getDiscountPercentage = async (couponCode: string, tenantId: number) => {
+    const code = await couponModel.findOne({ code: couponCode, tenantId });
+
+    if (!code) {
+      return 0;
+    }
+
+    const currentDate = new Date();
+    const couponDate = new Date(code.validUpto);
+
+    if (currentDate <= couponDate) {
+      return code.discount;
+    }
+
+    return 0;
   };
 }

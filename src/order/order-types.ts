@@ -50,7 +50,7 @@ export interface CartItem extends Pick<Product, '_id' | 'name' | 'image' | 'pric
 interface Body {
   cart: CartItem[];
   address: string;
-  tenantId: string;
+  tenantId: number;
   customerId: string;
   paymentMode: string;
   comment: string;
